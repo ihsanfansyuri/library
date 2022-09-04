@@ -36,7 +36,7 @@ class BookController extends Controller
 
     Book::create($validateData);
 
-    return redirect('/book')->with('success', 'Book has been added!');
+    return redirect(route('book.index'))->with('success', 'Book has been added!');
   }
 
   public function edit($id)
@@ -49,22 +49,31 @@ class BookController extends Controller
     ]);
   }
 
-  public function update(Request $request, $id)
+  public function update(Request $request, Book $book)
   {
-    $validateData = $request->validate([
-      'name' => 'required|unique:books',
-      'author' => 'required|unique:books',
+    $rules = [
       'category_id' => 'required'
-    ]);
+    ];
 
-    Book::where('id', $id)->update($validateData);
+    if ($request->author != $book->author) {
+      $rules['author'] = 'required|unique:books';
+    }
+
+    if ($request->name != $book->name) {
+      $rules['name'] = 'required|unique:books';
+    }
+
+    $validateData = $request->validate($rules);
+
+    Book::where('id', $book->id)->update($validateData);
 
     return redirect(route('book.index'))->with('success', 'Book has been updated!');
   }
 
   public function delete($id)
   {
-    Book::where('id', $id)->delete();
+    // Book::where('id', $id)->delete();
+    Book::destroy($id);
 
     return redirect(route('book.index'))->with('success', 'Book has been deleted!');
   }
