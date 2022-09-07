@@ -1,5 +1,5 @@
 @extends('layouts.main')
 
 @section('container')
-    <h1>ini adalah halaman home</h1>
+    <h1>Halo {{ auth()->user()->username ??  '' }} selamat datang di Library App. </h1>
 @endsection

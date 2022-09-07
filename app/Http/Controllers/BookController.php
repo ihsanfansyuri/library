@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Validasi;
 use App\Models\Book;
 use App\Models\Category;
-use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
@@ -23,18 +23,14 @@ class BookController extends Controller
     return view('create', [
       'title' => 'Add Book',
       'categories' => Category::all(),
+      'type' => "create"
     ]);
   }
 
-  public function store(Request $request)
+  public function store(Validasi $request)
   {
-    $validateData = $request->validate([
-      'name' => 'required|unique:books',
-      'author' => 'required|unique:books',
-      'category_id' => 'required'
-    ]);
-
-    Book::create($validateData);
+    // dd($request->all());
+    Book::create($request->all());
 
     return redirect(route('book.index'))->with('success', 'Book has been added!');
   }
@@ -42,30 +38,17 @@ class BookController extends Controller
   public function edit($id)
   {
     $book = Book::findOrFail($id);
-    return view('edit', [
+    return view('create', [
       'book' => $book,
       'title' => 'Update Book',
       'categories' => Category::all(),
+      'type' => 'edit'
     ]);
   }
 
-  public function update(Request $request, Book $book)
+  public function update(Validasi $request, $id)
   {
-    $rules = [
-      'category_id' => 'required'
-    ];
-
-    if ($request->author != $book->author) {
-      $rules['author'] = 'required|unique:books';
-    }
-
-    if ($request->name != $book->name) {
-      $rules['name'] = 'required|unique:books';
-    }
-
-    $validateData = $request->validate($rules);
-
-    Book::where('id', $book->id)->update($validateData);
+    Book::where('id', $id)->update($request->except(['_method', '_token']));
 
     return redirect(route('book.index'))->with('success', 'Book has been updated!');
   }

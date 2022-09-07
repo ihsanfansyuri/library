@@ -11,7 +11,9 @@
   </div>
   @endif
 
-  <a href="{{ route('book.create') }}" type="button" class="btn btn-primary mt-3 mb-3">Add Book</a>
+  @can('admin')
+    <a href="{{ route('book.create') }}" type="button" class="btn btn-primary mt-3 mb-3">Add Book</a>
+  @endcan
 
   <table class="table table-striped">
     <thead>
@@ -20,7 +22,9 @@
         <th scope="col">Name</th>
         <th scope="col">Author</th>
         <th scope="col">Category</th>
-        <th scope="col">Action</th>
+        @can('admin')
+          <th scope="col">Action</th>
+        @endcan
       </tr>
     </thead>
     <tbody>
@@ -30,14 +34,18 @@
           <td>{{ $book->name }}</td>
           <td>{{ $book->author }}</td>
           <td>{{ $book->category->name }}</td>
-          <td>
-            <a href="{{ route('book.edit', ['id' => $book->id]) }}" class="badge bg-warning"><i class="bi bi-pencil-square"></i></a>
-            <form action="{{ route('book.delete', ['id' => $book->id]) }}" method="post" class="d-inline">
-              @method('delete')
-              @csrf
-              <button class="badge bg-danger border-0" onclick="confirm('Apakah anda yakin?')"><i class="bi bi-x-circle"></i></button>
-            </form>
-          </td>
+
+          @can('admin')    
+            <td>
+              <a href="{{ route('book.edit', ['id' => $book->id]) }}" class="badge bg-warning"><i class="bi bi-pencil-square"></i></a>
+              <form action="{{ route('book.delete', ['id' => $book->id]) }}" method="post" class="d-inline">
+                @method('delete')
+                @csrf
+                <button class="badge bg-danger border-0" onclick="confirm('Apakah anda yakin?')"><i class="bi bi-x-circle"></i></button>
+              </form>
+            </td>
+          @endcan
+          
         </tr>
         @endforeach
       </tbody>
